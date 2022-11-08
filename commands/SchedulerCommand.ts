@@ -4,6 +4,9 @@ import cron from 'node-cron'
 export default class SchedulerCommand extends BaseCommand {
   public static commandName = 'scheduler:run'
   public static description = ''
+  public static aliases: string[] = [
+    'scheduler:work'
+  ]
 
   public static settings = {
     loadApp: true,
@@ -14,7 +17,7 @@ export default class SchedulerCommand extends BaseCommand {
     const Scheduler = this.application.container.use('Adonis/Addons/Scheduler');
     const Ace = this.application.container.use('Adonis/Core/Ace');
 
-    for (const command of Scheduler.commands) {
+    for (const command of Scheduler.items) {
       cron.schedule(command.expression, async () => {
         switch (command.type) {
           case "command":

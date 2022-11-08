@@ -2,6 +2,6 @@ import Scheduler from "@ioc:Adonis/Addons/Scheduler"
 
 Scheduler.command("inspire").everyFiveSeconds();
 
-Scheduler.callback(() => {
-    console.log("Hello !");
-}).everyFiveSeconds();
+Scheduler.call(() => {
+    console.log("Pruge DB!");
+}).weekly();

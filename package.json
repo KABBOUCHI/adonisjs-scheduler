@@ -1,7 +1,7 @@
 {
   "name": "adonisjs-scheduler",
-  "version": "0.0.7",
-  "description": "",
+  "version": "0.0.8",
+  "description": "Task scheduler for AdonisJS",
   "homepage": "https://github.com/KABBOUCHI/adonisjs-scheduler#readme",
   "license": "MIT",
   "keywords": [
@@ -78,6 +78,7 @@
     "useTabs": true
   },
   "dependencies": {
-    "node-cron": "^3.0.2"
+    "node-cron": "^3.0.2",
+    "node-cron-expression": "^1.3.0"
   }
 }

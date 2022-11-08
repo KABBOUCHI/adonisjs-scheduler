@@ -1744,6 +1744,11 @@ no-case@^3.0.4:
     lower-case "^2.0.2"
     tslib "^2.0.3"
 
+node-cron-expression@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/node-cron-expression/-/node-cron-expression-1.3.0.tgz#88883a573fa66cc2da520d714e57e5ea0dcae4fd"
+  integrity sha512-nEyQE6RI1LA4tkVshCK+xUqzxCcz5aWugEIiuvaKW2TEUdo4WklUOeH5I6HMtSBRTugf8VarHd02ZGaknnVvXQ==
+
 node-cron@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/node-cron/-/node-cron-3.0.2.tgz#bb0681342bd2dfb568f28e464031280e7f06bd01"
