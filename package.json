@@ -1,6 +1,6 @@
 {
   "name": "adonisjs-scheduler",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "homepage": "https://github.com/KABBOUCHI/adonisjs-scheduler#readme",
   "license": "MIT",
@@ -12,6 +12,9 @@
   "author": "Georges KABBOUCHI <georges.kabbouchi@gmail.com>",
   "main": "build/providers/SchedulerProvider.js",
   "typings": "./build/adonis-typings/index.d.ts",
+  "files": [
+    "**/*"
+  ],
   "scripts": {
     "build": "npm run clean && npm run build-only && npm run copyfiles",
     "copyfiles": "copyfiles \"templates/**/*.txt\" build",
