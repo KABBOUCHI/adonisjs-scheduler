@@ -14,6 +14,12 @@ class ScheduleCommand {
         return this;
     }
 
+    public everyFiveSeconds() {
+        this.expression = "*/5 * * * * *"
+
+        return this;
+    }
+
       public cron(expression: string)
       {
           this.expression = expression;
