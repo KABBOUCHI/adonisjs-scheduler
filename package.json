@@ -1,0 +1,83 @@
+{
+  "name": "adonisjs-scheduler",
+  "version": "0.0.1",
+  "description": "",
+  "homepage": "https://github.com/KABBOUCHI/adonisjs-scheduler#readme",
+  "license": "MIT",
+  "keywords": [
+    "adonisjs",
+    "scheduler",
+    "crons"
+  ],
+  "author": "Georges KABBOUCHI <georges.kabbouchi@gmail.com>",
+  "main": "build/providers/SchedulerProvider.js",
+  "files": [
+    "build/adonis-typings",
+    "build/commands",
+    "build/providers",
+    "build/src",
+    "build/templates",
+    "build/instructions.js"
+  ],
+  "typings": "./build/adonis-typings/index.d.ts",
+  "scripts": {
+    "build": "npm run clean && npm run build-only && npm run copyfiles",
+    "copyfiles": "copyfiles \"templates/**/*.txt\" build",
+    "build-only": "tsc",
+    "clean": "rimraf build",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@adonisjs/application": "^5.2.0",
+    "@adonisjs/core": "^5.8.0",
+    "@adonisjs/sink": "^5.3.0",
+    "@types/node-cron": "^3.0.5",
+    "copyfiles": "^2.4.1",
+    "eslint": "^8.19.0",
+    "prettier": "^2.7.1",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.7.4"
+  },
+  "publishConfig": {
+    "tag": "latest",
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KABBOUCHI/adonisjs-scheduler.git"
+  },
+  "bugs": {
+    "url": "https://github.com/KABBOUCHI/adonisjs-scheduler/issues"
+  },
+  "adonisjs": {
+    "instructions": "./build/instructions.js",
+    "types": "adonisjs-scheduler",
+    "providers": [
+      "adonisjs-scheduler"
+    ],
+    "commands": [
+      "adonisjs-scheduler/build/commands"
+    ],
+    "templates": {
+      "basePath": "./build/templates",
+      "start": [
+        {
+          "src": "scheduler.txt",
+          "dest": "scheduler"
+        }
+      ]
+    }
+  },
+  "prettier": {
+    "arrowParens": "always",
+    "printWidth": 100,
+    "quoteProps": "consistent",
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "useTabs": true
+  },
+  "dependencies": {
+    "node-cron": "^3.0.2"
+  }
+}
