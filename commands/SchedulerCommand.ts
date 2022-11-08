@@ -5,19 +5,29 @@ export default class SchedulerCommand extends BaseCommand {
   public static commandName = 'scheduler:run'
   public static description = ''
 
-	public static settings = {
-		loadApp: true,
-		stayAlive: true,
-	};
+  public static settings = {
+    loadApp: true,
+    stayAlive: true,
+  };
 
   public async run() {
-      const Scheduler = this.application.container.use('Adonis/Addons/Scheduler');
-      const Ace = this.application.container.use('Adonis/Core/Ace');
+    const Scheduler = this.application.container.use('Adonis/Addons/Scheduler');
+    const Ace = this.application.container.use('Adonis/Core/Ace');
 
-      for (const command of Scheduler.commands) {
-        cron.schedule(command.expression, async () => {
-            await Ace.exec(command.commandName, command.commandArgs);
-        })
-      }
+    for (const command of Scheduler.commands) {
+      cron.schedule(command.expression, async () => {
+        switch (command.type) {
+          case "command":
+            await Ace.exec(command.commandName, command.commandArgs)
+            break;
+
+          case "callback":
+            await command.callback();
+
+          default:
+            break;
+        }
+      })
+    }
   }
 }
