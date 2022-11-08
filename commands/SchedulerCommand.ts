@@ -1,6 +1,4 @@
 import { BaseCommand } from '@adonisjs/core/build/standalone'
-import Ace from '@ioc:Adonis/Core/Ace'
-import Scheduler from '@ioc:Adonis/Addons/Scheduler'
 import cron from 'node-cron'
 
 export default class SchedulerCommand extends BaseCommand {
@@ -13,6 +11,9 @@ export default class SchedulerCommand extends BaseCommand {
 	};
 
   public async run() {
+      const Scheduler = this.application.container.use('Adonis/Addons/Scheduler');
+      const Ace = this.application.container.use('Adonis/Core/Ace');
+
       for (const command of Scheduler.commands) {
         cron.schedule(command.expression, async () => {
             await Ace.exec(command.commandName, command.commandArgs);
