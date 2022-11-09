@@ -1,4 +1,4 @@
-# AdonisJS Scheduler
+# AdonisJS Scheduler (WIP)
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/KABBOUCHI/adonisjs-scheduler/master/example.png" alt="Scheduler code example">
