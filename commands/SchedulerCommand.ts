@@ -5,7 +5,9 @@ export default class SchedulerCommand extends BaseCommand {
   public static commandName = 'scheduler:run'
   public static description = ''
   public static aliases: string[] = [
-    'scheduler:work'
+    'scheduler:work',
+    'schedule:work',
+    'schedule:run',
   ]
 
   public static settings = {
@@ -32,5 +34,7 @@ export default class SchedulerCommand extends BaseCommand {
         }
       })
     }
+
+    this.logger.info(`Schedule worker started successfully.`);
   }
 }
