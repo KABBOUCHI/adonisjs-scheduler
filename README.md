@@ -1,7 +1,7 @@
 # AdonisJS Scheduler
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/KABBOUCHI/adonisjs-scheduler/master/example.png" alt="Scheduler code example" height="400">
+    <img src="https://raw.githubusercontent.com/KABBOUCHI/adonisjs-scheduler/master/example.png" alt="Scheduler code example">
 </p>
 
 ## Getting Started
