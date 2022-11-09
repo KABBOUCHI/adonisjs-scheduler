@@ -1,4 +1,18 @@
-# AdonisJS Scheduler (WIP)
+<div align="center">
+  <h1><b>AdonisJS Scheduler (WIP)</b></h1>
+
+  <p>Task scheduler for AdonisJS</p>
+
+  <p>
+    <a href="https://npmjs.org/package/adonisjs-scheduler" target="_blank">
+      <img alt="npm" src="https://img.shields.io/npm/v/adonisjs-scheduler.svg?style=for-the-badge&logo=npm" />
+    </a>
+    <a href="https://github.com/KABBOUCHI/adonisjs-scheduler/blob/master/LICENSE.md" target="_blank">
+      <img alt="License: MIT" src="https://img.shields.io/npm/l/adonisjs-scheduler?color=blueviolet&style=for-the-badge" />
+    </a>
+    <img alt="Typescript" src="https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript" />
+  </p>
+</div>
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/KABBOUCHI/adonisjs-scheduler/master/example.png" alt="Scheduler code example">
