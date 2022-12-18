@@ -1,4 +1,5 @@
 import { everyHour, everyMinute, every } from "node-cron-expression"
+import { BaseCommand } from '@adonisjs/core/build/standalone'
 
 abstract class BaseSchedule {
     abstract type: string;
@@ -171,9 +172,9 @@ class ScheduleCallback extends BaseSchedule {
 export class Scheduler {
     items: BaseSchedule[] = []
 
-    public command(name: string, args: string[] = []) {
+    public command(name: string | typeof BaseCommand, args: string[] = []) {
 
-        let newCommand = new ScheduleCommand(name, args);
+        let newCommand = new ScheduleCommand(typeof name === "string" ? name : name.commandName, args);
 
         this.items.push(newCommand)
 
