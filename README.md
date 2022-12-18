@@ -46,7 +46,10 @@ node ace scheduler:work
 
 import Scheduler from "@ioc:Adonis/Addons/Scheduler"
 
+import PurgeUsers from "Commands/PurgeUsers";
+
 Scheduler.command("inspire").everyFiveSeconds();
+Scheduler.command(PurgeUsers, [ "30 days"]).everyFiveSeconds();
 
 Scheduler.call(() => {
     console.log("Pruge DB!");

@@ -10,7 +10,25 @@ export default async function instructions(
 
     rcfile.setPreload('./start/scheduler', ["console"])
 
+    rcfile.setAlias("Commands", "commands");
+
     rcfile.commit();
 
     sink.logger.action('update').succeeded('.adonisrc');
+
+    const tsfile = new sink.files.JsonFile(projectRoot,"tsconfig.json")
+
+    const paths = tsfile.get("compilerOptions.paths");
+
+    if(! paths["Commands/*"]){
+        paths["Commands/*"] =  [
+            "./commands/*"
+          ]
+    }
+
+    tsfile.set("compilerOptions.paths", paths)
+
+    tsfile.commit();
+
+    console.log(tsfile.get("compilerOptions.paths"));
 }
