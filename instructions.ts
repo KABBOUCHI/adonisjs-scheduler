@@ -16,19 +16,19 @@ export default async function instructions(
 
     sink.logger.action('update').succeeded('.adonisrc');
 
-    const tsfile = new sink.files.JsonFile(projectRoot,"tsconfig.json")
+    const tsfile = new sink.files.JsonFile(projectRoot, "tsconfig.json")
 
     const paths = tsfile.get("compilerOptions.paths");
 
-    if(! paths["Commands/*"]){
-        paths["Commands/*"] =  [
+    if (!paths["Commands/*"]) {
+        paths["Commands/*"] = [
             "./commands/*"
-          ]
+        ]
     }
 
     tsfile.set("compilerOptions.paths", paths)
 
     tsfile.commit();
 
-    console.log(tsfile.get("compilerOptions.paths"));
+    sink.logger.action('update').succeeded('tsconfig.json');
 }
