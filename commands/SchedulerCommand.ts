@@ -32,6 +32,8 @@ export default class SchedulerCommand extends BaseCommand {
           default:
             break;
         }
+      }, {
+        runOnInit: command.runOnInit
       })
     }
 

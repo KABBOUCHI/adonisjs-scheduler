@@ -4,6 +4,11 @@ import { BaseCommand } from '@adonisjs/core/build/standalone'
 abstract class BaseSchedule {
     abstract type: string;
     expression: string = "* * * * *";
+    runOnInit: boolean = false;
+
+    public immediate(state: boolean = true) {
+        this.runOnInit = state
+    }
 
     public everyMinutes(minutes: number) {
         this.expression = every(minutes).minutes().toString()

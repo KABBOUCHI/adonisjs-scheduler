@@ -434,10 +434,10 @@
   resolved "https://registry.yarnpkg.com/@types/luxon/-/luxon-3.1.0.tgz#b9842d233a06b267fe4117f1c224f20b8a149825"
   integrity sha512-gCd/HcCgjqSxfMrgtqxCgYk/22NBQfypwFUG7ZAyG/4pqs51WLTcUzVp1hqTbieDYeHS3WoVEh2Yv/2l+7B0Vg==
 
-"@types/node-cron@^3.0.5":
-  version "3.0.5"
-  resolved "https://registry.yarnpkg.com/@types/node-cron/-/node-cron-3.0.5.tgz#5609fe5ecbf936150d483ab44ee74b08ce8014cf"
-  integrity sha512-uoDOALlHFxcPzRJR/M2L8478OqLcuGsx+SPjIKkp7cdWh9y2risWtC2M0KPjrwV8wvcj6eyYB/HozizbgvzumA==
+"@types/node-cron@^3.0.7":
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/@types/node-cron/-/node-cron-3.0.7.tgz#978bf75f7247385c61d23b6a060ba9eedb03e2f4"
+  integrity sha512-9PuLtBboc/+JJ7FshmJWv769gDonTpItN0Ol5TMwclpSQNjVyB2SRxSKBcTtbSysSL5R7Oea06kTTFNciCoYwA==
 
 "@types/node@*":
   version "18.11.9"

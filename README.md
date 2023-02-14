@@ -80,4 +80,5 @@ Method  | Description
 `.monthly();`  |  Run the task on the first day of every month at 00:00
 `.quarterly();` |  Run the task on the first day of every quarter at 00:00
 `.yearly();`  |  Run the task on the first day of every year at 00:00
+`.immediate();`  |  Run the task on startup
 

@@ -1,6 +1,6 @@
 {
 	"name": "adonisjs-scheduler",
-	"version": "0.0.17",
+	"version": "0.0.18",
 	"description": "Task scheduler for AdonisJS",
 	"homepage": "https://github.com/KABBOUCHI/adonisjs-scheduler#readme",
 	"license": "MIT",
@@ -31,7 +31,7 @@
 		"@adonisjs/application": "^5.2.0",
 		"@adonisjs/core": "^5.8.0",
 		"@adonisjs/sink": "^5.3.0",
-		"@types/node-cron": "^3.0.5",
+		"@types/node-cron": "^3.0.7",
 		"copyfiles": "^2.4.1",
 		"eslint": "^8.19.0",
 		"prettier": "^2.7.1",
