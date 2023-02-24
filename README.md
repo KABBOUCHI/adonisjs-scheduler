@@ -49,7 +49,12 @@ import Scheduler from "@ioc:Adonis/Addons/Scheduler"
 import PurgeUsers from "Commands/PurgeUsers";
 
 Scheduler.command("inspire").everyFiveSeconds();
-Scheduler.command(PurgeUsers, ["30 days"]).everyFiveSeconds();
+Scheduler.command(PurgeUsers, ["30 days"]).everyFiveSeconds().withoutOverlapping();
+
+Scheduler.withoutOverlapping(() => {
+  Scheduler.command("inspire").everySecond();
+  Scheduler.command(PurgeUsers, ["30 days"]).everyFiveSeconds();
+}, { expiresAt: 30_000 });
 
 Scheduler.call(() => {
     console.log("Pruge DB!");
@@ -81,4 +86,5 @@ Method  | Description
 `.quarterly();` |  Run the task on the first day of every quarter at 00:00
 `.yearly();`  |  Run the task on the first day of every year at 00:00
 `.immediate();`  |  Run the task on startup
+`.withoutOverlapping();`  | Run the task without overlapping
 

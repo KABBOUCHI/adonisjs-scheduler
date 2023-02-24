@@ -4,10 +4,19 @@ import { BaseCommand } from '@adonisjs/core/build/standalone'
 abstract class BaseSchedule {
     abstract type: string;
     expression: string = "* * * * *";
-    runOnInit: boolean = false;
+    config = {
+        immediate: false,
+        withoutOverlapping: false,
+        expiresAt: 3600000
+    }
 
     public immediate(state: boolean = true) {
-        this.runOnInit = state
+        this.config.immediate = state
+    }
+
+    public withoutOverlapping(expiresAt: number = 3600000) {
+        this.config.withoutOverlapping = true
+        this.config.expiresAt = expiresAt;
     }
 
     public everyMinutes(minutes: number) {
@@ -149,7 +158,7 @@ abstract class BaseSchedule {
 }
 
 class ScheduleCommand extends BaseSchedule {
-    type: string = "command";
+    type: "command" = "command";
 
     commandName: string;
     commandArgs: string[];
@@ -163,7 +172,7 @@ class ScheduleCommand extends BaseSchedule {
 }
 
 class ScheduleCallback extends BaseSchedule {
-    type: string = "callback";
+    type: "callback" = "callback";
 
     callback: Function;
 
@@ -175,7 +184,7 @@ class ScheduleCallback extends BaseSchedule {
 }
 
 export class Scheduler {
-    items: BaseSchedule[] = []
+    items: (ScheduleCallback | ScheduleCommand)[] = []
 
     public command(name: string | typeof BaseCommand, args: string[] = []) {
 
@@ -193,5 +202,17 @@ export class Scheduler {
         this.items.push(newCommand)
 
         return newCommand
+    }
+
+    public withoutOverlapping(callback: () => void, config = { expiresAt: 3600000 }) {
+        const lastLength = this.items.length
+        callback()
+        const currentLength = this.items.length
+
+        const newItems = this.items.slice(lastLength, currentLength);
+
+        for (const item of newItems) {
+            item.withoutOverlapping(config.expiresAt)
+        }
     }
 }
