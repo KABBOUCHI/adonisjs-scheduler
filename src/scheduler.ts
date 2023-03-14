@@ -12,7 +12,7 @@ abstract class BaseSchedule {
     }
 
     public skip(state: boolean = true) {
-        this.config.enabled = state
+        this.config.enabled = !state
 
         return this;
     }
