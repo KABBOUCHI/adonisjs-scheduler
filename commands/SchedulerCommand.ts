@@ -14,7 +14,7 @@ interface IRunOptions {
 
 const run = async (cb: () => any | PromiseLike<any>, options: IRunOptions) => {
   if (!options.enabled)
-    await cb()
+    return await cb()
 
   if(lock.isBusy(options.key)) {
     console.log(`${options.key} is busy`)
