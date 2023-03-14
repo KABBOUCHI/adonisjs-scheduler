@@ -5,9 +5,16 @@ abstract class BaseSchedule {
     abstract type: string;
     expression: string = "* * * * *";
     config = {
+        enabled: true,
         immediate: false,
         withoutOverlapping: false,
         expiresAt: 3600000
+    }
+
+    public skip(state: boolean = true) {
+        this.config.enabled = state
+
+        return this;
     }
 
     public immediate(state: boolean = true) {

@@ -67,6 +67,7 @@ export default class SchedulerCommand extends BaseCommand {
             break;
         }
       }, {
+        scheduled: command.config.enabled,
         runOnInit: command.config.immediate
       })
     }
