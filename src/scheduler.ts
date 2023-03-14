@@ -12,11 +12,15 @@ abstract class BaseSchedule {
 
     public immediate(state: boolean = true) {
         this.config.immediate = state
+
+        return this;
     }
 
     public withoutOverlapping(expiresAt: number = 3600000) {
         this.config.withoutOverlapping = true
         this.config.expiresAt = expiresAt;
+
+        return this;
     }
 
     public everyMinutes(minutes: number) {
