@@ -10,14 +10,17 @@ interface IRunOptions {
   enabled: boolean
   timeout: number
   key: string
+  onBusy?: () => any | PromiseLike<any>
 }
 
 const run = async (cb: () => any | PromiseLike<any>, options: IRunOptions) => {
   if (!options.enabled)
     return await cb()
 
-  if(lock.isBusy(options.key)) {
-    console.log(`${options.key} is busy`)
+  if (lock.isBusy(options.key)) {
+    if (options.onBusy) {
+      await options.onBusy()
+    }
     return;
   }
 
@@ -43,6 +46,8 @@ export default class SchedulerCommand extends BaseCommand {
   public async run() {
     const Scheduler = this.application.container.use('Adonis/Addons/Scheduler') as Scheduler;
     const Ace = this.application.container.use('Adonis/Core/Ace');
+    const Logger = this.application.container.use('Adonis/Core/Logger');
+
 
     for (let index = 0; index < Scheduler.items.length; index++) {
       const command = Scheduler.items[index];
@@ -52,7 +57,10 @@ export default class SchedulerCommand extends BaseCommand {
             await run(() => Ace.exec(command.commandName, command.commandArgs), {
               enabled: command.config.withoutOverlapping,
               timeout: command.config.expiresAt,
-              key: `${index}-${command.commandName}-${command.commandArgs}`
+              key: `${index}-${command.commandName}-${command.commandArgs}`,
+              onBusy: () => {
+                Logger.warn(`Command ${index}-${command.commandName}-${command.commandArgs} is busy`)
+              }
             })
             break;
 
@@ -60,7 +68,10 @@ export default class SchedulerCommand extends BaseCommand {
             await run(() => command.callback(), {
               enabled: command.config.withoutOverlapping,
               timeout: command.config.expiresAt,
-              key: `${index}-callback`
+              key: `${index}-callback`,
+              onBusy: () => {
+                Logger.warn(`Callback ${index} is busy`)
+              }
             })
 
           default:
@@ -72,6 +83,6 @@ export default class SchedulerCommand extends BaseCommand {
       })
     }
 
-    this.logger.info(`Schedule worker started successfully.`);
+    Logger.info(`Schedule worker started successfully.`);
   }
 }
