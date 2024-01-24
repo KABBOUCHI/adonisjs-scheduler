@@ -1,5 +1,5 @@
-import { BaseCommand } from '@adonisjs/core/build/standalone'
-
+import { BaseCommand } from '@adonisjs/core/ace'
+import { CommandOptions } from '@adonisjs/core/types/ace'
 
 const quotes = [
   'Act only according to that maxim whereby you can, at the same time, will that it should become a universal law. - Immanuel Kant',
@@ -44,13 +44,12 @@ const quotes = [
 ];
 
 export default class InspireCommand extends BaseCommand {
-  public static commandName = 'inspire'
-  public static description = ''
+  static commandName = 'inspire'
+  static description = ''
 
-  public static settings = {
-    loadApp: false,
-    stayAlive: false,
-  };
+  static options: CommandOptions = {
+    startApp: true
+  }
 
   public async run() {
     this.logger.info(quotes[Math.floor(Math.random() * quotes.length)]);

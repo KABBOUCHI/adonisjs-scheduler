@@ -1,5 +1,5 @@
+import { BaseCommand } from "@adonisjs/core/ace";
 import { everyHour, everyMinute, every } from "node-cron-expression"
-import { BaseCommand } from '@adonisjs/core/build/standalone'
 
 abstract class BaseSchedule {
     abstract type: string;

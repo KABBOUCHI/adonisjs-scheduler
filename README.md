@@ -1,7 +1,7 @@
 <div align="center">
-  <h1><b>AdonisJS Scheduler (WIP)</b></h1>
+  <h1><b>AdonisJS Scheduler</b></h1>
 
-  <p>Task scheduler for AdonisJS</p>
+  <p>Task scheduler for AdonisJS v6</p>
 
   <p>
     <a href="https://npmjs.org/package/adonisjs-scheduler" target="_blank">
@@ -18,12 +18,16 @@
     <img src="https://raw.githubusercontent.com/KABBOUCHI/adonisjs-scheduler/master/example.png" alt="Scheduler code example">
 </p>
 
+<aside class="notice">
+  <a href="https://github.com/KABBOUCHI/adonisjs-scheduler/tree/0.x">For AdonisJS v5 use 0.x branch</a>
+</aside>
+
 ## Getting Started
 
 This package is available in the npm registry.
 
 ```bash
-npm install adonisjs-scheduler
+pnpm install adonisjs-scheduler
 ```
 
 Next, configure the package by running the following command.
@@ -44,19 +48,19 @@ node ace scheduler:work
 ```ts
 // start/scheduler.ts
 
-import Scheduler from "@ioc:Adonis/Addons/Scheduler"
+import scheduler from 'adonisjs-scheduler/services/main'
 
-import PurgeUsers from "Commands/PurgeUsers";
+import PurgeUsers from "../commands/purge_users";
 
-Scheduler.command("inspire").everyFiveSeconds();
-Scheduler.command(PurgeUsers, ["30 days"]).everyFiveSeconds().withoutOverlapping();
+scheduler.command("inspire").everyFiveSeconds();
+scheduler.command(PurgeUsers, ["30 days"]).everyFiveSeconds().withoutOverlapping();
 
-Scheduler.withoutOverlapping(() => {
-  Scheduler.command("inspire").everySecond();
-  Scheduler.command(PurgeUsers, ["30 days"]).everyFiveSeconds();
+scheduler.withoutOverlapping(() => {
+  scheduler.command("inspire").everySecond();
+  scheduler.command(PurgeUsers, ["30 days"]).everyFiveSeconds();
 }, { expiresAt: 30_000 });
 
-Scheduler.call(() => {
+scheduler.call(() => {
     console.log("Pruge DB!");
 }).weekly();
 ```
