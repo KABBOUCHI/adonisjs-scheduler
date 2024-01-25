@@ -1,7 +1,7 @@
 <div align="center">
-  <h1><b>AdonisJS Scheduler (WIP)</b></h1>
+  <h1><b>AdonisJS Scheduler</b></h1>
 
-  <p>Task scheduler for AdonisJS</p>
+  <p>Task scheduler for AdonisJS v5</p>
 
   <p>
     <a href="https://npmjs.org/package/adonisjs-scheduler" target="_blank">
@@ -23,7 +23,7 @@
 This package is available in the npm registry.
 
 ```bash
-npm install adonisjs-scheduler
+npm install adonisjs-scheduler@0.1
 ```
 
 Next, configure the package by running the following command.
