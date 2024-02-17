@@ -23,9 +23,7 @@ const run = async (cb: () => any | PromiseLike<any>, options: IRunOptions) => {
     return;
   }
 
-  const unlock = await lock.acquire(options.key, cb, { maxPending: 1, timeout: options.timeout })
-
-  unlock();
+  await lock.acquire(options.key, cb, { maxPending: 1, timeout: options.timeout })
 }
 
 export default class SchedulerCommand extends BaseCommand {
