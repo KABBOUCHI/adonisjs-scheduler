@@ -44,6 +44,10 @@ export default class SchedulerCommand extends BaseCommand {
     const schedule = await this.app.container.make("scheduler")
     const logger = await this.app.container.make("logger")
 
+    if(schedule.onStartingCallback) {
+      await schedule.onStartingCallback()
+    }
+
     for (let index = 0; index < schedule.items.length; index++) {
       const command = schedule.items[index];
       cron.schedule(command.expression, async () => {
@@ -103,5 +107,9 @@ export default class SchedulerCommand extends BaseCommand {
     }
 
     logger.info(`Schedule worker started successfully.`);
+
+    if(schedule.onStartedCallback) {
+      await schedule.onStartedCallback()
+    }
   }
 }

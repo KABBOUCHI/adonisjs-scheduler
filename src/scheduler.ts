@@ -197,6 +197,9 @@ class ScheduleCallback extends BaseSchedule {
 export class Scheduler {
     items: (ScheduleCallback | ScheduleCommand)[] = []
 
+    onStartingCallback?: () => void|Promise<void>;
+    onStartedCallback?: () => void|Promise<void>;
+
     public command(name: string | typeof BaseCommand, args: string[] = []) {
 
         let newCommand = new ScheduleCommand(typeof name === "string" ? name : name.commandName, args);
@@ -225,5 +228,13 @@ export class Scheduler {
         for (const item of newItems) {
             item.withoutOverlapping(config.expiresAt)
         }
+    }
+
+    public onStarting(callback: () => void|Promise<void>) {
+        this.onStartingCallback = callback
+    }
+
+    public onStarted(callback: () => void|Promise<void>) {
+        this.onStartedCallback = callback
     }
 }
