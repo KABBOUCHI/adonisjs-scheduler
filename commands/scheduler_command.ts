@@ -40,75 +40,87 @@ export default class SchedulerCommand extends BaseCommand {
     staysAlive: true
   }
 
+  tasks: cron.ScheduledTask[] = []
+
+  prepare() {
+    this.app.terminating(async () => {
+      for (const task of this.tasks) {
+        task.stop()
+      }
+    })
+  }
+
   public async run() {
     const schedule = await this.app.container.make("scheduler")
     const logger = await this.app.container.make("logger")
 
-    if(schedule.onStartingCallback) {
+    if (schedule.onStartingCallback) {
       await schedule.onStartingCallback()
     }
 
     for (let index = 0; index < schedule.items.length; index++) {
       const command = schedule.items[index];
-      cron.schedule(command.expression, async () => {
-        try {
-          switch (command.type) {
-            case "command":
-              const ace = new Kernel(this.app)
+      this.tasks.push(
+        cron.schedule(command.expression, async () => {
+          try {
+            switch (command.type) {
+              case "command":
+                const ace = new Kernel(this.app)
 
-              this.app.rcFile.commands.forEach((commandModule) => {
-                ace.addLoader(() =>
-                  typeof commandModule === 'function' ? commandModule() : this.app.import(commandModule)
-                )
-              })
+                this.app.rcFile.commands.forEach((commandModule) => {
+                  ace.addLoader(() =>
+                    typeof commandModule === 'function' ? commandModule() : this.app.import(commandModule)
+                  )
+                })
 
-              const fsLoader = new FsLoader<typeof BaseCommand>(this.app.commandsPath())
-              ace.addLoader({
-                async getMetaData() {
-                  if (!command.commandName || !ace.getCommand(command.commandName)) {
-                    return fsLoader.getMetaData()
+                const fsLoader = new FsLoader<typeof BaseCommand>(this.app.commandsPath())
+                ace.addLoader({
+                  async getMetaData() {
+                    if (!command.commandName || !ace.getCommand(command.commandName)) {
+                      return fsLoader.getMetaData()
+                    }
+                    return []
+                  },
+                  getCommand(command) {
+                    return fsLoader.getCommand(command)
+                  },
+                })
+                await run(() => ace.exec(command.commandName, command.commandArgs), {
+                  enabled: command.config.withoutOverlapping,
+                  timeout: command.config.expiresAt,
+                  key: `${index}-${command.commandName}-${command.commandArgs}`,
+                  onBusy: () => {
+                    logger.warn(`Command ${index}-${command.commandName}-${command.commandArgs} is busy`)
                   }
-                  return []
-                },
-                getCommand(command) {
-                  return fsLoader.getCommand(command)
-                },
-              })
-              await run(() => ace.exec(command.commandName, command.commandArgs), {
-                enabled: command.config.withoutOverlapping,
-                timeout: command.config.expiresAt,
-                key: `${index}-${command.commandName}-${command.commandArgs}`,
-                onBusy: () => {
-                  logger.warn(`Command ${index}-${command.commandName}-${command.commandArgs} is busy`)
-                }
-              })
-              break;
+                })
+                break;
 
-            case "callback":
-              await run(() => command.callback(), {
-                enabled: command.config.withoutOverlapping,
-                timeout: command.config.expiresAt,
-                key: `${index}-callback`,
-                onBusy: () => {
-                  logger.warn(`Callback ${index} is busy`)
-                }
-              })
+              case "callback":
+                await run(() => command.callback(), {
+                  enabled: command.config.withoutOverlapping,
+                  timeout: command.config.expiresAt,
+                  key: `${index}-callback`,
+                  onBusy: () => {
+                    logger.warn(`Callback ${index} is busy`)
+                  }
+                })
 
-            default:
-              break;
+              default:
+                break;
+            }
+          } catch (error) {
+            logger.error(error)
           }
-        } catch (error) {
-          logger.error(error)
-        }
-      }, {
-        scheduled: command.config.enabled,
-        runOnInit: command.config.enabled && command.config.immediate
-      })
+        }, {
+          scheduled: command.config.enabled,
+          runOnInit: command.config.enabled && command.config.immediate
+        })
+      )
     }
 
     logger.info(`Schedule worker started successfully.`);
 
-    if(schedule.onStartedCallback) {
+    if (schedule.onStartedCallback) {
       await schedule.onStartedCallback()
     }
   }
