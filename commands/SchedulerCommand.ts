@@ -51,15 +51,22 @@ export default class SchedulerCommand extends BaseCommand {
     const tasks: cron.ScheduledTask[] = []
 
     process.on('SIGTERM', () => {
+      Logger.info(`SIGTERM received. Stopping all tasks...`)
+
       for (const task of tasks) {
         task.stop()
       }
+
+      process.exit(0)
     })
 
     process.on('SIGINT', () => {
+      Logger.info(`SIGINT received. Stopping all tasks...`)
       for (const task of tasks) {
         task.stop()
       }
+
+      process.exit(0)
     })
 
     for (let index = 0; index < Scheduler.items.length; index++) {
