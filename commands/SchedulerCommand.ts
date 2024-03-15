@@ -48,39 +48,54 @@ export default class SchedulerCommand extends BaseCommand {
     const Ace = this.application.container.use('Adonis/Core/Ace');
     const Logger = this.application.container.use('Adonis/Core/Logger');
 
+    const tasks: cron.ScheduledTask[] = []
+
+    process.on('SIGTERM', () => {
+      for (const task of tasks) {
+        task.stop()
+      }
+    })
+
+    process.on('SIGINT', () => {
+      for (const task of tasks) {
+        task.stop()
+      }
+    })
 
     for (let index = 0; index < Scheduler.items.length; index++) {
       const command = Scheduler.items[index];
-      cron.schedule(command.expression, async () => {
-        switch (command.type) {
-          case "command":
-            await run(() => Ace.exec(command.commandName, command.commandArgs), {
-              enabled: command.config.withoutOverlapping,
-              timeout: command.config.expiresAt,
-              key: `${index}-${command.commandName}-${command.commandArgs}`,
-              onBusy: () => {
-                Logger.warn(`Command ${index}-${command.commandName}-${command.commandArgs} is busy`)
-              }
-            })
-            break;
+      tasks.push(
+        cron.schedule(command.expression, async () => {
+          switch (command.type) {
+            case "command":
+              await run(() => Ace.exec(command.commandName, command.commandArgs), {
+                enabled: command.config.withoutOverlapping,
+                timeout: command.config.expiresAt,
+                key: `${index}-${command.commandName}-${command.commandArgs}`,
+                onBusy: () => {
+                  Logger.warn(`Command ${index}-${command.commandName}-${command.commandArgs} is busy`)
+                }
+              })
+              break;
 
-          case "callback":
-            await run(() => command.callback(), {
-              enabled: command.config.withoutOverlapping,
-              timeout: command.config.expiresAt,
-              key: `${index}-callback`,
-              onBusy: () => {
-                Logger.warn(`Callback ${index} is busy`)
-              }
-            })
+            case "callback":
+              await run(() => command.callback(), {
+                enabled: command.config.withoutOverlapping,
+                timeout: command.config.expiresAt,
+                key: `${index}-callback`,
+                onBusy: () => {
+                  Logger.warn(`Callback ${index} is busy`)
+                }
+              })
 
-          default:
-            break;
-        }
-      }, {
-        scheduled: command.config.enabled,
-        runOnInit: command.config.enabled && command.config.immediate
-      })
+            default:
+              break;
+          }
+        }, {
+          scheduled: command.config.enabled,
+          runOnInit: command.config.enabled && command.config.immediate
+        })
+      )
     }
 
     Logger.info(`Schedule worker started successfully.`);
