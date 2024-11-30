@@ -45,50 +45,57 @@ node ace scheduler:work
 ```
 
 ## Defining Schedules
+
 ```ts
 // start/scheduler.ts
 
 import scheduler from 'adonisjs-scheduler/services/main'
 
-import PurgeUsers from "../commands/purge_users";
+import PurgeUsers from '../commands/purge_users'
 
-scheduler.command("inspire").everyFiveSeconds();
-scheduler.command(PurgeUsers, ["30 days"]).everyFiveSeconds().withoutOverlapping();
+scheduler.command('inspire').everyFiveSeconds()
+scheduler.command(PurgeUsers, ['30 days']).everyFiveSeconds().withoutOverlapping()
 
-scheduler.withoutOverlapping(() => {
-  scheduler.command("inspire").everySecond();
-  scheduler.command(PurgeUsers, ["30 days"]).everyFiveSeconds();
-}, { expiresAt: 30_000 });
+scheduler.withoutOverlapping(
+  () => {
+    scheduler.command('inspire').everySecond()
+    scheduler.command(PurgeUsers, ['30 days']).everyFiveSeconds()
+  },
+  { expiresAt: 30_000 }
+)
 
-scheduler.call(() => {
-    console.log("Pruge DB!");
-}).weekly();
+scheduler
+  .call(() => {
+    console.log('Pruge DB!')
+  })
+  .weekly()
 ```
 
 ## Schedule Frequency Options
 
-Method  | Description
-------------- | -------------
-`.cron('* * * * *');`  |  Run the task on a custom cron schedule
-`.everyMinute();`  |  Run the task every minute
-`.everyTwoMinutes();`  |  Run the task every two minutes
-`.everyThreeMinutes();`  |  Run the task every three minutes
-`.everyFourMinutes();`  |  Run the task every four minutes
-`.everyFiveMinutes();`  |  Run the task every five minutes
-`.everyTenMinutes();`  |  Run the task every ten minutes
-`.everyFifteenMinutes();`  |  Run the task every fifteen minutes
-`.everyThirtyMinutes();`  |  Run the task every thirty minutes
-`.hourly();`  |  Run the task every hour
-`.everyTwoHours();`  |  Run the task every two hours
-`.everyThreeHours();`  |  Run the task every three hours
-`.everyFourHours();`  |  Run the task every four hours
-`.everyFiveHours();`  |  Run the task every five hours
-`.everySixHours();`  |  Run the task every six hours
-`.daily();`  |  Run the task every day at midnight
-`.weekly();`  |  Run the task every Sunday at 00:00
-`.monthly();`  |  Run the task on the first day of every month at 00:00
-`.quarterly();` |  Run the task on the first day of every quarter at 00:00
-`.yearly();`  |  Run the task on the first day of every year at 00:00
-`.immediate();`  |  Run the task on startup
-`.withoutOverlapping();`  | Run the task without overlapping
-
+| Method                           | Description                                             |
+| -------------------------------- | ------------------------------------------------------- |
+| `.cron('* * * * *');`            | Run the task on a custom cron schedule                  |
+| `.everyMinute();`                | Run the task every minute                               |
+| `.everyTwoMinutes();`            | Run the task every two minutes                          |
+| `.everyThreeMinutes();`          | Run the task every three minutes                        |
+| `.everyFourMinutes();`           | Run the task every four minutes                         |
+| `.everyFiveMinutes();`           | Run the task every five minutes                         |
+| `.everyTenMinutes();`            | Run the task every ten minutes                          |
+| `.everyFifteenMinutes();`        | Run the task every fifteen minutes                      |
+| `.everyThirtyMinutes();`         | Run the task every thirty minutes                       |
+| `.hourly();`                     | Run the task every hour                                 |
+| `.everyTwoHours();`              | Run the task every two hours                            |
+| `.everyThreeHours();`            | Run the task every three hours                          |
+| `.everyFourHours();`             | Run the task every four hours                           |
+| `.everyFiveHours();`             | Run the task every five hours                           |
+| `.everySixHours();`              | Run the task every six hours                            |
+| `.daily();`                      | Run the task every day at midnight                      |
+| `.weekly();`                     | Run the task every Sunday at 00:00                      |
+| `.monthly();`                    | Run the task on the first day of every month at 00:00   |
+| `.quarterly();`                  | Run the task on the first day of every quarter at 00:00 |
+| `.yearly();`                     | Run the task on the first day of every year at 00:00    |
+| `.immediate();`                  | Run the task on startup                                 |
+| `.withoutOverlapping();`         | Run the task without overlapping                        |
+| `.withoutOverlapping();`         | Run the task without overlapping                        |
+| `.timezone('America/New_York');` | Set the timezone for the task.                          |
