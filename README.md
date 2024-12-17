@@ -42,6 +42,9 @@ node ace configure adonisjs-scheduler
 node ace scheduler:run
 # or
 node ace scheduler:work
+
+# automatically restart the scheduler when files are modified during development mode
+node ace scheduler:run --watch
 ```
 
 ## Defining Schedules

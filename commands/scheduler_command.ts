@@ -1,7 +1,9 @@
-import { BaseCommand, FsLoader, Kernel } from '@adonisjs/core/ace'
+import { BaseCommand, FsLoader, Kernel, flags } from '@adonisjs/core/ace'
 import cron from 'node-cron'
 import AsyncLock from 'async-lock'
 import { CommandOptions } from '@adonisjs/core/types/ace'
+import { ChildProcess, spawn } from 'child_process'
+import chokidar from 'chokidar'
 
 const lock = new AsyncLock()
 
@@ -35,6 +37,9 @@ export default class SchedulerCommand extends BaseCommand {
     staysAlive: true,
   }
 
+  @flags.boolean({ description: 'Restart the scheduler on file changes' })
+  declare watch: boolean
+
   tasks: cron.ScheduledTask[] = []
 
   prepare() {
@@ -46,6 +51,10 @@ export default class SchedulerCommand extends BaseCommand {
   }
 
   public async run() {
+    if (this.watch) {
+      return await this.runAndWatch()
+    }
+
     const schedule = await this.app.container.make('scheduler')
     const logger = await this.app.container.make('logger')
 
@@ -127,5 +136,49 @@ export default class SchedulerCommand extends BaseCommand {
     if (schedule.onStartedCallback) {
       await schedule.onStartedCallback()
     }
+  }
+
+  public async runAndWatch() {
+    const logger = await this.app.container.make('logger')
+    let child: ChildProcess
+
+    const startProcess = () => {
+      if (child) child.kill()
+      child = spawn('node', ['ace.js', 'scheduler:run'], { stdio: 'inherit' })
+    }
+
+    const watcher = chokidar.watch([this.app.appRoot.pathname], {
+      //@ts-ignore
+      ignored: (path, stats) => {
+        if (path.includes('node_modules') || path.includes('.git') || path.includes('build')) {
+          return true
+        }
+
+        return stats?.isFile() && !path.endsWith('.ts') && !path.endsWith('.js')
+      },
+      persistent: true,
+      ignoreInitial: true,
+    })
+
+    let timeoutId: NodeJS.Timeout
+
+    watcher.on('all', (event, path) => {
+      if (typeof path === 'string') {
+        logger.info(
+          `File ${path.replace(this.app.appRoot.pathname, '')} changed (${event}), restarting...`
+        )
+      }
+      clearTimeout(timeoutId)
+      timeoutId = setTimeout(() => {
+        startProcess()
+      }, 300)
+    })
+
+    startProcess()
+
+    this.app.terminating(async () => {
+      if (child) child.kill()
+      process.exit()
+    })
   }
 }
