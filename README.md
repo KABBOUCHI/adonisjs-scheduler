@@ -100,5 +100,4 @@ scheduler
 | `.yearly();`                     | Run the task on the first day of every year at 00:00    |
 | `.immediate();`                  | Run the task on startup                                 |
 | `.withoutOverlapping();`         | Run the task without overlapping                        |
-| `.withoutOverlapping();`         | Run the task without overlapping                        |
 | `.timezone('America/New_York');` | Set the timezone for the task.                          |

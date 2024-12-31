@@ -1,9 +1,18 @@
 import { BaseCommand } from '@adonisjs/core/ace'
-import { everyHour, everyMinute, every } from 'node-cron-expression'
+import { DateTime } from 'luxon'
 
-abstract class BaseSchedule {
+type Range<
+  START extends number,
+  END extends number,
+  ARR extends unknown[] = [],
+  ACC extends number = never
+> = ARR['length'] extends END
+  ? ACC | START | END
+  : Range<START, END, [...ARR, 1], ARR[START] extends undefined ? ACC : ACC | ARR['length']>
+
+export abstract class BaseSchedule {
   abstract type: string
-  expression: string = '* * * * *'
+  expression: string = '0 * * * * *' // seconds minutes hours dayOfMonth month dayOfWeek
   config = {
     enabled: true,
     immediate: false,
@@ -38,15 +47,11 @@ abstract class BaseSchedule {
   }
 
   public everyMinutes(minutes: number) {
-    this.expression = every(minutes).minutes().toString()
-
-    return this
+    return this.spliceIntoPosition(1, `*/${minutes}`)
   }
 
   public everyMinute() {
-    this.expression = everyMinute().toString()
-
-    return this
+    return this.spliceIntoPosition(1, '*')
   }
 
   public everyTwoMinutes() {
@@ -78,138 +83,120 @@ abstract class BaseSchedule {
   }
 
   public hourly() {
-    this.expression = everyHour().toString()
-
-    return this
+    return this.spliceIntoPosition(1, 0)
   }
 
-  public everyHours(hours: number) {
-    this.expression = every(hours).hours().toString()
-
-    return this
+  public hourlyAt(offset: string | number | Range<0, 59> | Range<0, 59>[]) {
+    return this.hourBasedSchedule(offset, '*')
   }
 
-  public everyTwoHours() {
-    return this.everyHours(2)
+  public everyHours(hours: number, offset: any[] | string | number = 0) {
+    return this.hourBasedSchedule(offset, `*/${hours}`)
+  }
+  public everyOddHour(offset: any[] | string | number = 0) {
+    return this.hourBasedSchedule(offset, '1-23/2')
   }
 
-  public everyThreeHours() {
-    return this.everyHours(3)
+  public everyTwoHours(offset: any[] | string | number = 0) {
+    return this.everyHours(2, offset)
   }
 
-  public everyFourHours() {
-    return this.everyHours(5)
+  public everyThreeHours(offset: any[] | string | number = 0) {
+    return this.everyHours(3, offset)
   }
 
-  public everyFiveHours() {
-    return this.everyHours(6)
+  public everyFourHours(offset: any[] | string | number = 0) {
+    return this.everyHours(4, offset)
   }
 
-  public everySixHours() {
-    return this.everyHours(6)
+  public everyFiveHours(offset: any[] | string | number = 0) {
+    return this.everyHours(5, offset)
+  }
+
+  public everySixHours(offset: any[] | string | number = 0) {
+    return this.everyHours(6, offset)
   }
 
   public daily() {
-    this.expression = '0 0 * * *'
+    return this.hourBasedSchedule(0, 0)
+  }
 
-    return this
+  public weekdays() {
+    return this.spliceIntoPosition(5, '1-5')
+  }
+
+  public weekends() {
+    return this.spliceIntoPosition(5, '6,0')
+  }
+
+  public mondays() {
+    return this.days(1)
+  }
+
+  public tuesdays() {
+    return this.days(2)
+  }
+
+  public wednesdays() {
+    return this.days(3)
+  }
+
+  public thursdays() {
+    return this.days(4)
+  }
+
+  public fridays() {
+    return this.days(5)
+  }
+
+  public saturdays() {
+    return this.days(6)
+  }
+
+  public sundays() {
+    return this.days(0)
   }
 
   public weekly() {
-    this.expression = '0 0 * * 0'
+    return this.spliceIntoPosition(1, 0).spliceIntoPosition(2, 0).spliceIntoPosition(5, 0)
+  }
 
-    return this
+  public weeklyOn(dayOfWeek: Range<0, 7> = 1, time: string = '0:0') {
+    this.dailyAt(time)
+
+    return this.days(dayOfWeek as any)
   }
 
   public monthly() {
-    this.expression = '0 0 1 * *'
-
-    return this
+    return this.spliceIntoPosition(1, 0).spliceIntoPosition(2, 0).spliceIntoPosition(3, 1)
   }
 
   public quarterly() {
-    this.expression = '0 0 1 */3 *'
-
-    return this
+    return this.spliceIntoPosition(1, 0)
+      .spliceIntoPosition(2, 0)
+      .spliceIntoPosition(3, 1)
+      .spliceIntoPosition(4, '1-12/3')
   }
 
   public yearly() {
-    this.expression = '0 0 1 1 *'
+    return this.spliceIntoPosition(1, 0)
+      .spliceIntoPosition(2, 0)
+      .spliceIntoPosition(3, 1)
+      .spliceIntoPosition(4, 1)
+  }
 
-    return this
+  public yearlyOn(month: number = 1, dayOfMonth: string | Range<1, 31> = 1, time: string = '0:0') {
+    this.dailyAt(time)
+
+    return this.spliceIntoPosition(3, dayOfMonth).spliceIntoPosition(4, month)
   }
 
   public everySecond() {
-    this.expression = '* * * * * *'
-
-    return this
+    return this.spliceIntoPosition(0, '*')
   }
 
-  public everySeconds(
-    second:
-      | 1
-      | 2
-      | 3
-      | 4
-      | 5
-      | 6
-      | 7
-      | 8
-      | 9
-      | 10
-      | 11
-      | 12
-      | 13
-      | 14
-      | 15
-      | 16
-      | 17
-      | 18
-      | 19
-      | 20
-      | 21
-      | 22
-      | 23
-      | 24
-      | 25
-      | 26
-      | 27
-      | 28
-      | 29
-      | 30
-      | 31
-      | 32
-      | 33
-      | 34
-      | 35
-      | 36
-      | 37
-      | 38
-      | 39
-      | 40
-      | 41
-      | 42
-      | 43
-      | 44
-      | 45
-      | 46
-      | 47
-      | 48
-      | 49
-      | 50
-      | 51
-      | 52
-      | 53
-      | 54
-      | 55
-      | 56
-      | 57
-      | 58
-      | 59
-  ) {
-    this.expression = `*/${second} * * * * *`
-
-    return this
+  public everySeconds(second: Range<1, 59>) {
+    return this.spliceIntoPosition(0, `*/${second}`)
   }
 
   public everyFiveSeconds() {
@@ -232,6 +219,77 @@ abstract class BaseSchedule {
     this.expression = expression
 
     return this
+  }
+
+  protected spliceIntoPosition(position: number, value: string | number) {
+    const segements = this.expression.split(' ')
+
+    segements[position] = String(value)
+
+    this.cron(segements.join(' '))
+
+    return this
+  }
+
+  protected hourBasedSchedule(
+    minutes: string | number | Range<0, 59>[],
+    hours: string | number | Range<0, 59>[]
+  ) {
+    minutes = Array.isArray(minutes) ? minutes.join(',') : minutes
+    hours = Array.isArray(hours) ? hours.join(',') : hours
+
+    return this.spliceIntoPosition(1, minutes).spliceIntoPosition(2, hours)
+  }
+
+  public days(days: string | number | string[] | number[] | any[]) {
+    return this.spliceIntoPosition(5, Array.isArray(days) ? days.join(',') : days)
+  }
+
+  public at(time: string) {
+    return this.dailyAt(time)
+  }
+
+  public dailyAt(time: string) {
+    let segments = time.split(':')
+
+    return this.hourBasedSchedule(
+      segments.length === 2 ? Number(segments[1]) : '0',
+      Number(segments[0])
+    )
+  }
+
+  public twiceDailyAt(first: Range<0, 23> = 1, second: Range<0, 23> = 13, offset = 0) {
+    const hours = first + ',' + second
+
+    return this.hourBasedSchedule(offset, hours)
+  }
+
+  public twiceDaily(first: Range<0, 23> = 1, second: Range<0, 23> = 13) {
+    return this.twiceDailyAt(first, second, 0)
+  }
+
+  public twiceMonthly(first: Range<1, 31> = 1, second: Range<1, 31> = 13, time: string = '0:0') {
+    const dayOfMonth = first + ',' + second
+
+    this.dailyAt(time)
+
+    return this.spliceIntoPosition(3, dayOfMonth)
+  }
+
+  public lastDayOfMonth(time: string = '0:0') {
+    this.dailyAt(time)
+
+    return this.spliceIntoPosition(3, DateTime.now().endOf('month').day)
+  }
+
+  public monthlyOn(dayOfMonth: Range<1, 31> = 1, time: string = '0:0') {
+    this.dailyAt(time)
+
+    return this.spliceIntoPosition(3, dayOfMonth)
+  }
+
+  public getExpression() {
+    return this.expression
   }
 }
 
