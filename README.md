@@ -22,18 +22,12 @@
   <a href="https://github.com/KABBOUCHI/adonisjs-scheduler/tree/0.x">For AdonisJS v5 use 0.x branch</a>
 </aside>
 
-## Getting Started
+## Installation
 
-This package is available in the npm registry.
-
-```bash
-pnpm install adonisjs-scheduler
-```
-
-Next, configure the package by running the following command.
+Install the package from npm using the following command:
 
 ```bash
-node ace configure adonisjs-scheduler
+node ace add adonisjs-scheduler
 ```
 
 ## Running The Scheduler
@@ -88,16 +82,26 @@ scheduler
 | `.everyFifteenMinutes();`        | Run the task every fifteen minutes                      |
 | `.everyThirtyMinutes();`         | Run the task every thirty minutes                       |
 | `.hourly();`                     | Run the task every hour                                 |
+| `.hourlyAt(17);`                 | Run the task every hour at 17 minutes past the hour.    |
 | `.everyTwoHours();`              | Run the task every two hours                            |
 | `.everyThreeHours();`            | Run the task every three hours                          |
 | `.everyFourHours();`             | Run the task every four hours                           |
 | `.everyFiveHours();`             | Run the task every five hours                           |
 | `.everySixHours();`              | Run the task every six hours                            |
 | `.daily();`                      | Run the task every day at midnight                      |
+| `.dailyAt('13:00');`             | Run the task every day at 13:00.                        |
+| `.twiceDaily(1, 13);`            | Run the task daily at 1:00 & 13:00.                     |
+| `.twiceDailyAt(1, 13, 15);`      | Run the task daily at 1:15 & 13:15.                     |
 | `.weekly();`                     | Run the task every Sunday at 00:00                      |
+| `.weeklyOn(1, '8:00');`          | Run the task every week on Monday at 8:00.              |
 | `.monthly();`                    | Run the task on the first day of every month at 00:00   |
-| `.quarterly();`                  | Run the task on the first day of every quarter at 00:00 |
-| `.yearly();`                     | Run the task on the first day of every year at 00:00    |
+| `.monthlyOn(4, '15:00');`        | Run the task every month on the 4th at 15:00.           |
+| `.twiceMonthly(1, 16, '13:00');` | Run the task monthly on the 1st and 16th at 13:00.      |
+| `.lastDayOfMonth('15:00');`      | Run the task on the last day of the month at 15:00.     |
+| `.quarterly();`                  | Run the task on the first day of every quarter at 00:00.|
+| `.quarterlyOn(4, '14:00');`      | Run the task every quarter on the 4th at 14:00.         |
+| `.yearly();`                     | Run the task on the first day of every year at 00:00.   |
+| `.yearlyOn(6, 1, '17:00');`      | Run the task every year on June 1st at 17:00.           |
+| `.timezone('America/New_York');` | Set the timezone for the task.                          |
 | `.immediate();`                  | Run the task on startup                                 |
 | `.withoutOverlapping();`         | Run the task without overlapping                        |
-| `.timezone('America/New_York');` | Set the timezone for the task.                          |
