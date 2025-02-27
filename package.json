@@ -1,6 +1,6 @@
 {
   "name": "adonisjs-scheduler",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Task scheduler for AdonisJS",
   "homepage": "https://github.com/KABBOUCHI/adonisjs-scheduler#readme",
   "license": "MIT",
@@ -67,8 +67,10 @@
   "dependencies": {
     "async-lock": "^1.4.1",
     "chokidar": "^4.0.2",
+    "cron-parser": "^5.0.4",
     "luxon": "^3.5.0",
-    "node-cron": "^3.0.2"
+    "node-cron": "^3.0.2",
+    "string-width": "^7.2.0"
   },
   "peerDependencies": {
     "@adonisjs/core": "^6.2.0"
