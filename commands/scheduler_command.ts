@@ -93,6 +93,9 @@ export default class SchedulerCommand extends BaseCommand {
                       return fsLoader.getCommand(command)
                     },
                   })
+                  for (const callback of command.beforeCallbacks) {
+                    await callback()
+                  }
                   await run(() => ace.exec(command.commandName, command.commandArgs), {
                     enabled: command.config.withoutOverlapping,
                     timeout: command.config.expiresAt,
@@ -103,9 +106,15 @@ export default class SchedulerCommand extends BaseCommand {
                       )
                     },
                   })
+                  for (const callback of command.afterCallbacks) {
+                    await callback()
+                  }
                   break
 
                 case 'callback':
+                  for (const callback of command.beforeCallbacks) {
+                    await callback()
+                  }
                   await run(() => command.callback(), {
                     enabled: command.config.withoutOverlapping,
                     timeout: command.config.expiresAt,
@@ -114,6 +123,9 @@ export default class SchedulerCommand extends BaseCommand {
                       logger.warn(`Callback ${index} is busy`)
                     },
                   })
+                  for (const callback of command.afterCallbacks) {
+                    await callback()
+                  }
 
                 default:
                   break

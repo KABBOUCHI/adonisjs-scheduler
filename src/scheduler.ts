@@ -21,6 +21,21 @@ export abstract class BaseSchedule {
     timezone: undefined as string | undefined,
   }
 
+  beforeCallbacks: (() => Promise<void>)[] = []
+  afterCallbacks: (() => Promise<void>)[] = []
+
+  public before(callback: () => Promise<void>) {
+    this.beforeCallbacks.push(callback)
+
+    return this
+  }
+
+  public after(callback: () => Promise<void>) {
+    this.afterCallbacks.push(callback)
+
+    return this
+  }
+
   public timezone(timezone: string) {
     this.config.timezone = timezone
 
