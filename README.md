@@ -68,6 +68,31 @@ scheduler
   .weekly()
 ```
 
+or define schedule directly on command
+
+```ts
+import { BaseCommand, args } from '@adonisjs/core/ace'
+import { schedule } from 'adonisjs-scheduler'
+
+@schedule("* * * * *", ["30 days"])
+@schedule((s) => s.everyFiveSeconds().immediate(), ["7 days"])
+@schedule((s) => s.everyMinute(), ["42 days"])
+export default class PurgeUsers extends BaseCommand {
+  static commandName = 'purge:users'
+  static description = ''
+
+  static options: CommandOptions = {}
+
+  @args.string()
+  declare olderThan: string
+
+  async run() {
+    //
+  }
+}
+```
+
+
 ## Schedule Frequency Options
 
 | Method                           | Description                                             |

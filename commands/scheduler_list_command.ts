@@ -14,6 +14,7 @@ export default class SchedulerCommand extends BaseCommand {
 
   public async run() {
     const schedule = await this.app.container.make('scheduler')
+    await schedule.boot()
 
     const items: any[] = []
     for (let index = 0; index < schedule.items.length; index++) {

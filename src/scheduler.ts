@@ -1,5 +1,7 @@
-import { BaseCommand } from '@adonisjs/core/ace'
+import { BaseCommand, FsLoader } from '@adonisjs/core/ace'
+import type { ApplicationService } from '@adonisjs/core/types'
 import { DateTime } from 'luxon'
+import { arrayWrap } from './utils.js'
 
 type Range<
   START extends number,
@@ -308,7 +310,7 @@ export abstract class BaseSchedule {
   }
 }
 
-class ScheduleCommand extends BaseSchedule {
+export class ScheduleCommand extends BaseSchedule {
   type: 'command' = 'command'
 
   commandName: string
@@ -322,7 +324,7 @@ class ScheduleCommand extends BaseSchedule {
   }
 }
 
-class ScheduleCallback extends BaseSchedule {
+export class ScheduleCallback extends BaseSchedule {
   type: 'callback' = 'callback'
 
   callback: Function
@@ -335,13 +337,36 @@ class ScheduleCallback extends BaseSchedule {
 }
 
 export class Scheduler {
+  constructor(protected app: ApplicationService) {
+    this.app = app
+  }
+
+  static __decorator_schedules: (ScheduleCallback | ScheduleCommand)[] = []
+
   items: (ScheduleCallback | ScheduleCommand)[] = []
 
   onStartingCallback?: () => void | Promise<void>
   onStartedCallback?: () => void | Promise<void>
 
-  public command(name: string | typeof BaseCommand, args: string[] = []) {
-    let newCommand = new ScheduleCommand(typeof name === 'string' ? name : name.commandName, args)
+  public async boot() {
+    const fsLoader = new FsLoader<typeof BaseCommand>(this.app.commandsPath())
+    await fsLoader.getMetaData()
+
+    for (const command of this.app.rcFile.commands) {
+      const loader = await (typeof command === 'function' ? command() : command)
+      await loader.getMetaData()
+    }
+
+    if (!Scheduler.__decorator_schedules || Scheduler.__decorator_schedules.length === 0) return
+
+    this.items.push(...Scheduler.__decorator_schedules)
+  }
+
+  public command(name: string | typeof BaseCommand, args: string | string[] = []) {
+    let newCommand = new ScheduleCommand(
+      typeof name === 'string' ? name : name.commandName,
+      arrayWrap(args)
+    )
 
     this.items.push(newCommand)
 

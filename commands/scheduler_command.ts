@@ -56,6 +56,9 @@ export default class SchedulerCommand extends BaseCommand {
     }
 
     const schedule = await this.app.container.make('scheduler')
+    await schedule.boot()
+    const fsLoader = new FsLoader<typeof BaseCommand>(this.app.commandsPath())
+
     const logger = await this.app.container.make('logger')
 
     if (schedule.onStartingCallback) {
@@ -81,7 +84,6 @@ export default class SchedulerCommand extends BaseCommand {
                     )
                   })
 
-                  const fsLoader = new FsLoader<typeof BaseCommand>(this.app.commandsPath())
                   ace.addLoader({
                     async getMetaData() {
                       if (!command.commandName || !ace.getCommand(command.commandName)) {
