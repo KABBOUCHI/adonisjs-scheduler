@@ -58,6 +58,13 @@ export default class SchedulerCommand extends BaseCommand {
     const schedule = await this.app.container.make('scheduler')
     await schedule.boot()
     const fsLoader = new FsLoader<typeof BaseCommand>(this.app.commandsPath())
+    const loaders: any[] = [fsLoader]
+
+    this.app.rcFile.commands.forEach((commandModule) => {
+      loaders.push(() =>
+        typeof commandModule === 'function' ? commandModule() : this.app.import(commandModule)
+      )
+    })
 
     const logger = await this.app.container.make('logger')
 
@@ -76,25 +83,10 @@ export default class SchedulerCommand extends BaseCommand {
                 case 'command':
                   const ace = new Kernel(this.app)
 
-                  this.app.rcFile.commands.forEach((commandModule) => {
-                    ace.addLoader(() =>
-                      typeof commandModule === 'function'
-                        ? commandModule()
-                        : this.app.import(commandModule)
-                    )
-                  })
+                  for (const loader of loaders) {
+                    ace.addLoader(loader)
+                  }
 
-                  ace.addLoader({
-                    async getMetaData() {
-                      if (!command.commandName || !ace.getCommand(command.commandName)) {
-                        return fsLoader.getMetaData()
-                      }
-                      return []
-                    },
-                    getCommand(command) {
-                      return fsLoader.getCommand(command)
-                    },
-                  })
                   for (const callback of command.beforeCallbacks) {
                     await callback()
                   }
