@@ -130,3 +130,21 @@ export default class PurgeUsers extends BaseCommand {
 | `.timezone('America/New_York');` | Set the timezone for the task.                          |
 | `.immediate();`                  | Run the task on startup                                 |
 | `.withoutOverlapping();`         | Run the task without overlapping                        |
+
+
+## Alternative Ways to Run the Scheduler
+
+Besides using `node ace scheduler:run`, you can also manually initialize and control the scheduler worker in your code:
+
+```ts
+import { Worker } from '@adonisjs/scheduler'
+import app from '@adonisjs/core/services/app'
+
+const worker = new Worker(app)
+
+app.terminating(async () => {
+  await worker.stop()
+})
+
+await worker.start()
+```

@@ -1,31 +1,8 @@
-import { BaseCommand, FsLoader, Kernel, flags } from '@adonisjs/core/ace'
-import cron from 'node-cron'
-import AsyncLock from 'async-lock'
+import { BaseCommand, flags } from '@adonisjs/core/ace'
 import { CommandOptions } from '@adonisjs/core/types/ace'
 import { ChildProcess, spawn } from 'child_process'
 import chokidar from 'chokidar'
-
-const lock = new AsyncLock()
-
-interface IRunOptions {
-  enabled: boolean
-  timeout: number
-  key: string
-  onBusy?: () => any | PromiseLike<any>
-}
-
-const run = async (cb: () => any | PromiseLike<any>, options: IRunOptions) => {
-  if (!options.enabled) return await cb()
-
-  if (lock.isBusy(options.key)) {
-    if (options.onBusy) {
-      await options.onBusy()
-    }
-    return
-  }
-
-  await lock.acquire(options.key, cb, { maxPending: 1, timeout: options.timeout })
-}
+import { Worker } from '../src/worker.js'
 
 export default class SchedulerCommand extends BaseCommand {
   static commandName = 'scheduler:run'
@@ -40,13 +17,11 @@ export default class SchedulerCommand extends BaseCommand {
   @flags.boolean({ description: 'Restart the scheduler on file changes' })
   declare watch: boolean
 
-  tasks: cron.ScheduledTask[] = []
+  declare worker: Worker
 
   prepare() {
     this.app.terminating(async () => {
-      for (const task of this.tasks) {
-        task.stop()
-      }
+      if (this.worker) await this.worker.stop()
     })
   }
 
@@ -55,93 +30,8 @@ export default class SchedulerCommand extends BaseCommand {
       return await this.runAndWatch()
     }
 
-    const schedule = await this.app.container.make('scheduler')
-    await schedule.boot()
-    const fsLoader = new FsLoader<typeof BaseCommand>(this.app.commandsPath())
-    const loaders: any[] = [fsLoader]
-
-    this.app.rcFile.commands.forEach((commandModule) => {
-      loaders.push(() =>
-        typeof commandModule === 'function' ? commandModule() : this.app.import(commandModule)
-      )
-    })
-
-    const logger = await this.app.container.make('logger')
-
-    if (schedule.onStartingCallback) {
-      await schedule.onStartingCallback()
-    }
-
-    for (let index = 0; index < schedule.items.length; index++) {
-      const command = schedule.items[index]
-      this.tasks.push(
-        cron.schedule(
-          command.expression,
-          async () => {
-            try {
-              switch (command.type) {
-                case 'command':
-                  const ace = new Kernel(this.app)
-
-                  for (const loader of loaders) {
-                    ace.addLoader(loader)
-                  }
-
-                  for (const callback of command.beforeCallbacks) {
-                    await callback()
-                  }
-                  await run(() => ace.exec(command.commandName, command.commandArgs), {
-                    enabled: command.config.withoutOverlapping,
-                    timeout: command.config.expiresAt,
-                    key: `${index}-${command.commandName}-${command.commandArgs}`,
-                    onBusy: () => {
-                      logger.warn(
-                        `Command ${index}-${command.commandName}-${command.commandArgs} is busy`
-                      )
-                    },
-                  })
-                  for (const callback of command.afterCallbacks) {
-                    await callback()
-                  }
-                  break
-
-                case 'callback':
-                  for (const callback of command.beforeCallbacks) {
-                    await callback()
-                  }
-                  await run(() => command.callback(), {
-                    enabled: command.config.withoutOverlapping,
-                    timeout: command.config.expiresAt,
-                    key: `${index}-callback`,
-                    onBusy: () => {
-                      logger.warn(`Callback ${index} is busy`)
-                    },
-                  })
-                  for (const callback of command.afterCallbacks) {
-                    await callback()
-                  }
-
-                default:
-                  break
-              }
-            } catch (error) {
-              logger.error(error)
-            }
-          },
-          {
-            scheduled: command.config.enabled,
-            timezone: command.config.timezone,
-            runOnInit: command.config.enabled && command.config.immediate,
-          }
-        )
-      )
-    }
-
-    logger.info(`Schedule worker started successfully.`)
-
-    if (schedule.onStartedCallback) {
-      await schedule.onStartedCallback()
-    }
+    this.worker = new Worker(this.app)
+    await this.worker.start()
   }
 
   public async runAndWatch() {

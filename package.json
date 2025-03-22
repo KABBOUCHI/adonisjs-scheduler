@@ -1,6 +1,6 @@
 {
   "name": "adonisjs-scheduler",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "description": "Task scheduler for AdonisJS",
   "homepage": "https://github.com/KABBOUCHI/adonisjs-scheduler#readme",
   "license": "MIT",
