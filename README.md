@@ -137,7 +137,7 @@ export default class PurgeUsers extends BaseCommand {
 Besides using `node ace scheduler:run`, you can also manually initialize and control the scheduler worker in your code:
 
 ```ts
-import { Worker } from '@adonisjs/scheduler'
+import { Worker } from 'adonisjs-scheduler'
 import app from '@adonisjs/core/services/app'
 
 const worker = new Worker(app)
