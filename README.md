@@ -148,3 +148,21 @@ app.terminating(async () => {
 
 await worker.start()
 ```
+
+
+Note: make sure to modify `adonisrc.ts` and include the environment where the worker is running.
+
+```ts
+import { defineConfig } from '@adonisjs/core/app'
+
+export default defineConfig({
+ providers: [
+   {
+      file: () => import('adonisjs-scheduler/scheduler_provider'),
+      environment: ['console', 'web'], // <---
+   },
+
+   // or enable for all environments
+   () => import('adonisjs-scheduler/scheduler_provider'),
+})
+```
