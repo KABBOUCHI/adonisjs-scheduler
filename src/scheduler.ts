@@ -14,6 +14,9 @@ type Range<
 
 export abstract class BaseSchedule {
   abstract type: string
+
+  name: string | undefined
+
   expression: string = '0 * * * * *' // seconds minutes hours dayOfMonth month dayOfWeek
   config = {
     enabled: true,
@@ -25,6 +28,11 @@ export abstract class BaseSchedule {
 
   beforeCallbacks: (() => Promise<void>)[] = []
   afterCallbacks: (() => Promise<void>)[] = []
+
+  public as(name: string) {
+    this.name = name
+    return this
+  }
 
   public before(callback: () => Promise<void>) {
     this.beforeCallbacks.push(callback)

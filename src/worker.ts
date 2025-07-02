@@ -30,7 +30,7 @@ export class Worker {
   loaders: any[] = []
   booted = false
 
-  constructor(public app: ApplicationService) {}
+  constructor(public app: ApplicationService, protected commandsToRun?: string[]) {}
 
   async boot() {
     if (this.booted) return
@@ -62,6 +62,11 @@ export class Worker {
 
     for (let index = 0; index < schedule.items.length; index++) {
       const command = schedule.items[index]
+
+      if(this.commandsToRun?.length && command.name && !this.commandsToRun.includes(command.name)) {
+        continue
+      }
+
       this.tasks.push(
         cron.schedule(
           command.expression,

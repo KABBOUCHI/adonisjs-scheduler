@@ -1,4 +1,4 @@
-import { BaseCommand, flags } from '@adonisjs/core/ace'
+import { BaseCommand, args, flags } from '@adonisjs/core/ace'
 import { CommandOptions } from '@adonisjs/core/types/ace'
 import { ChildProcess, spawn } from 'child_process'
 import chokidar from 'chokidar'
@@ -17,6 +17,9 @@ export default class SchedulerCommand extends BaseCommand {
   @flags.boolean({ description: 'Restart the scheduler on file changes' })
   declare watch: boolean
 
+  @args.spread({ required: false, allowEmptyValue: true })
+  declare commandsToRun: string[]
+
   declare worker: Worker
 
   prepare() {
@@ -30,7 +33,7 @@ export default class SchedulerCommand extends BaseCommand {
       return await this.runAndWatch()
     }
 
-    this.worker = new Worker(this.app)
+    this.worker = new Worker(this.app, this.commandsToRun)
     await this.worker.start()
   }
 
