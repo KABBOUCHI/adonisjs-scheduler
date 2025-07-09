@@ -66,7 +66,7 @@ export class Worker {
 
       if (
         this.commandsToRun?.length &&
-        ((command.name && !this.commandsToRun.includes(command.name)) ||
+        ((command.alias && !this.commandsToRun.includes(command.alias)) ||
           (command.type === 'command' && !this.commandsToRun.includes(command.commandName)))
       ) {
         continue
@@ -132,6 +132,12 @@ export class Worker {
             runOnInit: command.config.enabled && command.config.immediate,
           }
         )
+      )
+    }
+
+    if (!this.tasks.length) {
+      logger.error(
+        'Unable to start worker. No tasks found. Please verify the command name or alias'
       )
     }
 
