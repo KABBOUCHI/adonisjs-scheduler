@@ -139,6 +139,7 @@ export class Worker {
       logger.error(
         'Unable to start worker. No tasks found. Please verify the command name or alias'
       )
+      return
     }
 
     logger.info(`Schedule worker started successfully.`)
