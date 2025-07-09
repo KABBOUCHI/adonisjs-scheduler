@@ -4,8 +4,8 @@ import { arrayWrap } from './utils.js'
 
 export function schedule(
   expression: string | ((s: ScheduleCommand) => ScheduleCommand),
+  args: string | string[] = [],
   name?: string,
-  args: string | string[] = []
 ) {
   return function <T extends typeof BaseCommand>(target: T) {
     if (typeof expression === 'string') {
