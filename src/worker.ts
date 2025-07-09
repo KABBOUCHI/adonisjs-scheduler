@@ -2,6 +2,7 @@ import type { ApplicationService } from '@adonisjs/core/types'
 import cron from 'node-cron'
 import AsyncLock from 'async-lock'
 import { FsLoader, type BaseCommand, Kernel } from '@adonisjs/core/ace'
+import { ScheduleCallback } from './scheduler.js'
 
 const lock = new AsyncLock()
 
@@ -12,7 +13,7 @@ interface IRunOptions {
   onBusy?: () => any | PromiseLike<any>
 }
 
-const run = async (cb: () => any | PromiseLike<any>, options: IRunOptions) => {
+const run = async (cb: () => ScheduleCallback | PromiseLike<BaseCommand>, options: IRunOptions) => {
   if (!options.enabled) return await cb()
 
   if (lock.isBusy(options.key)) {
@@ -30,7 +31,7 @@ export class Worker {
   loaders: any[] = []
   booted = false
 
-  constructor(public app: ApplicationService) {}
+  constructor(public app: ApplicationService, protected commandsToRun?: string[]) {}
 
   async boot() {
     if (this.booted) return
@@ -62,6 +63,15 @@ export class Worker {
 
     for (let index = 0; index < schedule.items.length; index++) {
       const command = schedule.items[index]
+
+      if (
+        this.commandsToRun?.length &&
+        ((command.alias && !this.commandsToRun.includes(command.alias)) ||
+          (command.type === 'command' && !this.commandsToRun.includes(command.commandName)))
+      ) {
+        continue
+      }
+
       this.tasks.push(
         cron.schedule(
           command.expression,
@@ -123,6 +133,13 @@ export class Worker {
           }
         )
       )
+    }
+
+    if (!this.tasks.length) {
+      logger.error(
+        'Unable to start worker. No tasks found. Please verify the command name or alias'
+      )
+      return
     }
 
     logger.info(`Schedule worker started successfully.`)
