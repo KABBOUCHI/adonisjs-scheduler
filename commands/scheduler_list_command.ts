@@ -28,11 +28,16 @@ export default class SchedulerCommand extends BaseCommand {
               ? ` ${this.ui.colors.cyan(command.commandArgs.join(' '))}`
               : '')
 
-      const cron = CronExpressionParser.parse(command.expression, {
-        tz: command.config.timezone,
-      })
+      let nextDueDate: string | null = null
 
-      const nextDueDate = DateTime.fromJSDate(cron.next().toDate()).toRelative()
+      if (!command.config.enabled) {
+        nextDueDate = 'Disabled'
+      } else {
+        const cron = CronExpressionParser.parse(command.expression, {
+          tz: command.config.timezone,
+        })
+        nextDueDate = DateTime.fromJSDate(cron.next().toDate()).toRelative()
+      }
 
       items.push({
         expression: ` ${this.ui.colors.yellow(command.expression)} `,
