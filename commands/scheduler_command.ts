@@ -17,6 +17,9 @@ export default class SchedulerCommand extends BaseCommand {
   @flags.boolean({ description: 'Restart the scheduler on file changes' })
   declare watch: boolean
 
+  @flags.string({ description: 'Tag for the scheduler', default: 'default' })
+  declare tag: string
+
   declare worker: Worker
 
   prepare() {
@@ -31,7 +34,7 @@ export default class SchedulerCommand extends BaseCommand {
     }
 
     this.worker = new Worker(this.app)
-    await this.worker.start()
+    await this.worker.start(this.tag)
   }
 
   public async runAndWatch() {

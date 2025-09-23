@@ -1,4 +1,4 @@
-import { BaseCommand, cliHelpers } from '@adonisjs/core/ace'
+import { BaseCommand, cliHelpers, flags } from '@adonisjs/core/ace'
 import { CommandOptions } from '@adonisjs/core/types/ace'
 import { CronExpressionParser } from 'cron-parser'
 import { DateTime } from 'luxon'
@@ -7,6 +7,9 @@ import stringWidth from 'string-width'
 export default class SchedulerCommand extends BaseCommand {
   static commandName = 'scheduler:list'
   static description = ''
+
+  @flags.string({ description: 'Filter by tag' })
+  declare tag?: string
 
   static options: CommandOptions = {
     startApp: true,
@@ -19,6 +22,10 @@ export default class SchedulerCommand extends BaseCommand {
     const items: any[] = []
     for (let index = 0; index < schedule.items.length; index++) {
       const command = schedule.items[index]
+
+      if (this.tag && command.config.tag !== this.tag) {
+        continue
+      }
 
       const commandName =
         command.type === 'callback'

@@ -39,6 +39,9 @@ node ace scheduler:work
 
 # automatically restart the scheduler when files are modified during development mode
 node ace scheduler:run --watch
+
+
+node ace scheduler:run --tag <tag_name> # Run all schedules with the specified tag
 ```
 
 ## Defining Schedules
@@ -61,10 +64,25 @@ scheduler.withoutOverlapping(
   { expiresAt: 30_000 }
 )
 
+scheduler.withTag(
+  () => {
+    scheduler.command('inspire').everySecond()
+  },
+  'my-tag'
+)
+
 scheduler
   .call(() => {
     console.log('Pruge DB!')
   })
+  .weekly()
+
+
+scheduler
+  .call(() => {
+    console.log('Pruge DB!')
+  })
+  .tag('my-tag')
   .weekly()
 ```
 

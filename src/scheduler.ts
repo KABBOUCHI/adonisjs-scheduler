@@ -16,6 +16,7 @@ export abstract class BaseSchedule {
   abstract type: string
   expression: string = '0 * * * * *' // seconds minutes hours dayOfMonth month dayOfWeek
   config = {
+    tag: 'default',
     enabled: true,
     immediate: false,
     withoutOverlapping: false,
@@ -46,6 +47,12 @@ export abstract class BaseSchedule {
 
   public skip(state: boolean = true) {
     this.config.enabled = !state
+
+    return this
+  }
+
+  public tag(tag: string) {
+    this.config.tag = tag
 
     return this
   }
@@ -390,6 +397,18 @@ export class Scheduler {
 
     for (const item of newItems) {
       item.withoutOverlapping(config.expiresAt)
+    }
+  }
+
+  public withTag(callback: () => void, tag: string) {
+    const lastLength = this.items.length
+    callback()
+    const currentLength = this.items.length
+
+    const newItems = this.items.slice(lastLength, currentLength)
+
+    for (const item of newItems) {
+      item.tag(tag)
     }
   }
 

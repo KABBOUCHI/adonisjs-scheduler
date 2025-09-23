@@ -50,7 +50,7 @@ export class Worker {
     this.booted = true
   }
 
-  async start() {
+  async start(tag: string = 'default') {
     await this.boot()
 
     const schedule = await this.app.container.make('scheduler')
@@ -62,6 +62,11 @@ export class Worker {
 
     for (let index = 0; index < schedule.items.length; index++) {
       const command = schedule.items[index]
+
+      if (command.config.tag !== tag) {
+        continue
+      }
+
       this.tasks.push(
         cron.schedule(
           command.expression,
@@ -125,7 +130,7 @@ export class Worker {
       )
     }
 
-    logger.info(`Schedule worker started successfully.`)
+    logger.info(`[${tag}] Schedule worker started successfully.`)
 
     if (schedule.onStartedCallback) {
       await schedule.onStartedCallback()
