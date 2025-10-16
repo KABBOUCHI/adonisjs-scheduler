@@ -354,8 +354,11 @@ export class Scheduler {
 
   onStartingCallback?: () => void | Promise<void>
   onStartedCallback?: () => void | Promise<void>
+  onBootCallback?: () => void | Promise<void>
 
   public async boot() {
+    await this.onBootCallback?.()
+
     const fsLoader = new FsLoader<typeof BaseCommand>(this.app.commandsPath())
     await fsLoader.getMetaData()
 
