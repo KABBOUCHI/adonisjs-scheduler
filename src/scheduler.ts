@@ -422,4 +422,8 @@ export class Scheduler {
   public onStarted(callback: () => void | Promise<void>) {
     this.onStartedCallback = callback
   }
+
+  public onBoot(callback: () => void | Promise<void>) {
+    this.onBootCallback = callback
+  }
 }
