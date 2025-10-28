@@ -11,8 +11,17 @@ type Range<
 > = ARR['length'] extends END
   ? ACC | START | END
   : Range<START, END, [...ARR, 1], ARR[START] extends undefined ? ACC : ACC | ARR['length']>
+type DAYS = 0 | 1 | 2 | 3 | 4 | 5 | 6 | '0' | '1' | '2' | '3' | '4' | '5' | '6'
 
 export abstract class BaseSchedule {
+  SUNDAY = 0 as const
+  MONDAY = 1 as const
+  TUESDAY = 2 as const
+  WEDNESDAY = 3 as const
+  THURSDAY = 4 as const
+  FRIDAY = 5 as const
+  SATURDAY = 6 as const
+
   abstract type: string
   expression: string = '0 * * * * *' // seconds minutes hours dayOfMonth month dayOfWeek
   config = {
@@ -265,7 +274,7 @@ export abstract class BaseSchedule {
     return this.spliceIntoPosition(1, minutes).spliceIntoPosition(2, hours)
   }
 
-  public days(days: string | number | string[] | number[] | any[]) {
+  public days(days: DAYS | DAYS[]) {
     return this.spliceIntoPosition(5, Array.isArray(days) ? days.join(',') : days)
   }
 
@@ -344,6 +353,14 @@ export class ScheduleCallback extends BaseSchedule {
 }
 
 export class Scheduler {
+  SUNDAY = 0 as const
+  MONDAY = 1 as const
+  TUESDAY = 2 as const
+  WEDNESDAY = 3 as const
+  THURSDAY = 4 as const
+  FRIDAY = 5 as const
+  SATURDAY = 6 as const
+
   constructor(protected app: ApplicationService) {
     this.app = app
   }
