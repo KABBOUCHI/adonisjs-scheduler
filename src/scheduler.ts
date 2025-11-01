@@ -432,11 +432,11 @@ export class Scheduler {
     }
   }
 
-  public onStarting(callback: () => void | Promise<void>) {
+  public onStarting(callback: ({ tag }: { tag: string }) => void | Promise<void>) {
     this.onStartingCallback = callback
   }
 
-  public onStarted(callback: () => void | Promise<void>) {
+  public onStarted(callback: ({ tag }: { tag: string }) => void | Promise<void>) {
     this.onStartedCallback = callback
   }
 
