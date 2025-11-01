@@ -369,8 +369,8 @@ export class Scheduler {
 
   items: (ScheduleCallback | ScheduleCommand)[] = []
 
-  onStartingCallback?: () => void | Promise<void>
-  onStartedCallback?: () => void | Promise<void>
+  onStartingCallback?: ({ tag }: { tag: string }) => void | Promise<void>
+  onStartedCallback?: ({ tag }: { tag: string }) => void | Promise<void>
   onBootCallback?: () => void | Promise<void>
 
   public async boot() {

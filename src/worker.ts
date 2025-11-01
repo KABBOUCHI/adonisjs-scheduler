@@ -57,7 +57,9 @@ export class Worker {
     const logger = await this.app.container.make('logger')
 
     if (schedule.onStartingCallback) {
-      await schedule.onStartingCallback()
+      await schedule.onStartingCallback({
+        tag,
+      })
     }
 
     for (let index = 0; index < schedule.items.length; index++) {
@@ -133,7 +135,9 @@ export class Worker {
     logger.info(`[${tag}] Schedule worker started successfully.`)
 
     if (schedule.onStartedCallback) {
-      await schedule.onStartedCallback()
+      await schedule.onStartedCallback({
+        tag,
+      })
     }
   }
 
