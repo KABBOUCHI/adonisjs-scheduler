@@ -29,6 +29,7 @@ export class Worker {
   tasks: cron.ScheduledTask[] = []
   loaders: any[] = []
   booted = false
+  declare kernel: Kernel
 
   constructor(public app: ApplicationService) {}
 
@@ -46,6 +47,14 @@ export class Worker {
         typeof commandModule === 'function' ? commandModule() : this.app.import(commandModule)
       )
     })
+
+    this.kernel = new Kernel(this.app)
+
+    for (const loader of this.loaders) {
+      this.kernel.addLoader(loader)
+    }
+
+    await this.kernel.boot()
 
     this.booted = true
   }
@@ -76,16 +85,10 @@ export class Worker {
             try {
               switch (command.type) {
                 case 'command':
-                  const ace = new Kernel(this.app)
-
-                  for (const loader of this.loaders) {
-                    ace.addLoader(loader)
-                  }
-
                   for (const callback of command.beforeCallbacks) {
                     await callback()
                   }
-                  await run(() => ace.exec(command.commandName, command.commandArgs), {
+                  await run(() => this.kernel.exec(command.commandName, command.commandArgs), {
                     enabled: command.config.withoutOverlapping,
                     timeout: command.config.expiresAt,
                     key: `${index}-${command.commandName}-${command.commandArgs}`,
